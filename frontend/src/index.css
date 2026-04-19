@@ -1,0 +1,378 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-cream text-ink-900 font-sans antialiased;
+    background-color: #faf9f7;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  html.dark body {
+    background-color: #0d0d12 !important;
+    color: #f7f7f8 !important;
+  }
+
+  
+  html.dark h1,
+  html.dark h2,
+  html.dark h3,
+  html.dark h4,
+  html.dark h5,
+  html.dark h6 {
+    color: #f7f7f8 !important;
+  }
+
+  html.dark p {
+    color: #d9d9de;
+  }
+
+  html.dark span {
+    color: inherit;
+  }
+
+  html.dark label {
+    color: #d9d9de;
+  }
+
+  html.dark .bg-white {
+    background-color: #1a1a24 !important;
+  }
+
+  html.dark .bg-cream,
+  html.dark [class*="bg-ink-50"] {
+    background-color: #13131a !important;
+  }
+
+  html.dark .bg-ink-100 {
+    background-color: #1e1e2a !important;
+  }
+
+  html.dark .bg-ink-50 {
+    background-color: #16161f !important;
+  }
+
+  html.dark [class*="bg-gray-50"],
+  html.dark [class*="bg-gray-100"] {
+    background-color: #1a1a24 !important;
+  }
+
+  html.dark [class*="bg-gray-200"] {
+    background-color: #2a2a38 !important;
+  }
+
+
+  html.dark .text-ink-900,
+  html.dark .text-ink-950 {
+    color: #f7f7f8 !important;
+  }
+
+  html.dark .text-ink-800 {
+    color: #eeeef0 !important;
+  }
+
+  html.dark .text-ink-700 {
+    color: #d9d9de !important;
+  }
+
+  html.dark .text-ink-600 {
+    color: #b8b8c2 !important;
+  }
+
+  html.dark .text-ink-500 {
+    color: #9090a0 !important;
+  }
+
+  html.dark [class*="text-gray-900"],
+  html.dark [class*="text-gray-800"] {
+    color: #f7f7f8 !important;
+  }
+
+  html.dark [class*="text-gray-700"],
+  html.dark [class*="text-gray-600"] {
+    color: #b8b8c2 !important;
+  }
+
+  html.dark [class*="text-gray-500"],
+  html.dark [class*="text-gray-400"] {
+    color: #9090a0 !important;
+  }
+
+  
+  html.dark .border-ink-100 {
+    border-color: #2a2a38 !important;
+  }
+
+  html.dark .border-ink-200 {
+    border-color: #32323f !important;
+  }
+
+  html.dark [class*="border-gray-100"],
+  html.dark [class*="border-gray-200"] {
+    border-color: #2a2a38 !important;
+  }
+
+  
+  html.dark .card,
+  html.dark [class*="rounded-2xl"],
+  html.dark [class*="rounded-xl"] {
+    background-color: #1a1a24;
+    border-color: #2a2a38;
+  }
+
+
+  html.dark [class*="bg-red-"],
+  html.dark [class*="bg-green-"],
+  html.dark [class*="bg-blue-"],
+  html.dark [class*="bg-yellow-"],
+  html.dark [class*="bg-purple-"],
+  html.dark [class*="bg-gold-"],
+  html.dark [class*="bg-ink-950"] {
+   
+  }
+
+  
+  html.dark input,
+  html.dark textarea,
+  html.dark select {
+    background-color: #1a1a24 !important;
+    border-color: #2a2a38 !important;
+    color: #f7f7f8 !important;
+  }
+
+  html.dark input::placeholder,
+  html.dark textarea::placeholder {
+    color: #5d5d6e !important;
+  }
+
+  html.dark input:focus,
+  html.dark textarea:focus,
+  html.dark select:focus {
+    background-color: #22222e !important;
+    border-color: #c4a45a !important;
+    box-shadow: 0 0 0 2px rgba(196, 164, 90, 0.2) !important;
+  }
+
+  /* ── Table dark mode ── */
+  html.dark table {
+    color: #d9d9de;
+  }
+
+  html.dark th {
+    color: #f7f7f8 !important;
+    background-color: #1e1e2a !important;
+  }
+
+  html.dark td {
+    border-color: #2a2a38 !important;
+  }
+
+  html.dark tr:hover {
+    background-color: #1e1e2a !important;
+  }
+
+  /* ── Selection ── */
+  ::selection {
+    @apply bg-ink-900 text-cream;
+  }
+
+  html.dark ::selection {
+    background-color: #c4a45a;
+    color: #0d0d12;
+  }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-ink-100;
+  }
+
+  html.dark ::-webkit-scrollbar-track {
+    background-color: #1a1a24;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-ink-400 rounded-full;
+  }
+
+  html.dark ::-webkit-scrollbar-thumb {
+    background-color: #4c4c5a;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 bg-ink-950 text-white font-medium text-sm tracking-wide rounded-full transition-all duration-200 hover:bg-ink-800 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  html.dark .btn-primary {
+    background-color: #c4a45a;
+    color: #0d0d12;
+  }
+
+  html.dark .btn-primary:hover {
+    background-color: #d4b87a;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 border border-ink-900 text-ink-900 font-medium text-sm tracking-wide rounded-full transition-all duration-200 hover:bg-ink-950 hover:text-white active:scale-95;
+  }
+
+  html.dark .btn-outline {
+    border-color: #4c4c5a;
+    color: #d9d9de;
+  }
+
+  html.dark .btn-outline:hover {
+    background-color: #2a2a38;
+    color: #fff;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 text-ink-600 font-medium text-sm transition-all duration-200 hover:text-ink-950 hover:bg-ink-100 rounded-lg;
+  }
+
+  html.dark .btn-ghost {
+    color: #b8b8c2;
+  }
+
+  html.dark .btn-ghost:hover {
+    color: #fff;
+    background-color: #2a2a38;
+  }
+
+  .card {
+    @apply bg-white rounded-2xl overflow-hidden shadow-sm border border-ink-100;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+  }
+
+  html.dark .card {
+    background-color: #1a1a24 !important;
+    border-color: #2a2a38 !important;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 bg-ink-50 border border-ink-200 rounded-xl text-ink-900 placeholder-ink-400 font-sans text-sm transition-all duration-200 focus:outline-none focus:border-ink-600 focus:bg-white focus:ring-2 focus:ring-ink-200;
+  }
+
+  html.dark .input-field {
+    background-color: #1a1a24;
+    border-color: #2a2a38;
+    color: #f7f7f8;
+  }
+
+  html.dark .input-field::placeholder {
+    color: #5d5d6e;
+  }
+
+  html.dark .input-field:focus {
+    background-color: #22222e;
+    border-color: #c4a45a;
+    box-shadow: 0 0 0 2px rgba(196, 164, 90, 0.2);
+  }
+
+  .section-title {
+    @apply font-display text-4xl md:text-5xl font-semibold text-ink-950 leading-tight;
+  }
+
+  html.dark .section-title {
+    color: #f7f7f8;
+  }
+
+  .skeleton {
+    @apply animate-pulse rounded-xl;
+    background: linear-gradient(90deg, #eeeef0 25%, #f7f7f8 50%, #eeeef0 75%);
+    background-size: 1000px 100%;
+    animation: shimmer 2s infinite linear;
+  }
+
+  html.dark .skeleton {
+    background: linear-gradient(90deg, #1a1a24 25%, #22222e 50%, #1a1a24 75%);
+    background-size: 1000px 100%;
+  }
+
+  .tag {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-ink-100 text-ink-700;
+  }
+
+  html.dark .tag {
+    background-color: #2a2a38;
+    color: #b8b8c2;
+  }
+
+  .badge-sale {
+    @apply absolute top-3 left-3 bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded-full z-10;
+  }
+
+  .nav-link {
+    @apply text-sm font-medium text-ink-600 hover:text-ink-950 transition-colors duration-200;
+  }
+
+  html.dark .nav-link {
+    color: #b8b8c2;
+  }
+
+  html.dark .nav-link:hover {
+    color: #fff;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .glass {
+    backdrop-filter: blur(16px) saturate(180%);
+    background-color: rgba(250, 249, 247, 0.85);
+  }
+
+  html.dark .glass {
+    background-color: rgba(13, 13, 18, 0.85) !important;
+  }
+
+  .glass-dark {
+    backdrop-filter: blur(16px) saturate(180%);
+    background-color: rgba(13, 13, 18, 0.8);
+  }
+}
+
+/* Shimmer animation */
+@keyframes shimmer {
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+
+/* Page transitions */
+.page-enter {
+  opacity: 0;
+  transform: translateY(16px);
+}
+
+.page-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms, transform 300ms;
+}
