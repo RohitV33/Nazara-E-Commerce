@@ -1,6 +1,28 @@
 const https = require("https");
+const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
+require("dotenv").config();
 
-async function brevoSendMail({ to, subject, html }) {
+// Initialize Resend if API key is provided
+let resendClient = null;
+if (process.env.RESEND_API_KEY) {
+  resendClient = new Resend(process.env.RESEND_API_KEY);
+}
+
+// Initialize Nodemailer transporter if Gmail settings are provided
+let gmailTransporter = null;
+if (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) {
+  gmailTransporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.GMAIL_USER,
+      pass: process.env.GMAIL_APP_PASSWORD,
+    },
+  });
+}
+
+// 1. Brevo HTTP Mail Sender
+async function brevoSendMail({ to, subject, html, replyTo }) {
   const apiKey = process.env.BREVO_API_KEY;
   if (!apiKey) {
     console.error("[Mailer] BREVO_API_KEY not set.");
@@ -10,12 +32,18 @@ async function brevoSendMail({ to, subject, html }) {
   const senderEmail = process.env.SMTP_FROM_EMAIL || "verma61421st@gmail.com";
   const senderName = "Nazara Store";
 
-  const payload = JSON.stringify({
+  const payloadData = {
     sender: { name: senderName, email: senderEmail },
     to: [{ email: to }],
     subject,
     htmlContent: html,
-  });
+  };
+
+  if (replyTo) {
+    payloadData.replyTo = { email: replyTo };
+  }
+
+  const payload = JSON.stringify(payloadData);
 
   return new Promise((resolve) => {
     const options = {
@@ -34,7 +62,7 @@ async function brevoSendMail({ to, subject, html }) {
       res.on("data", (chunk) => (data += chunk));
       res.on("end", () => {
         if (res.statusCode >= 200 && res.statusCode < 300) {
-          console.log(`[Mailer] Email sent to ${to}`);
+          console.log(`[Mailer] Email sent to ${to} via Brevo`);
           resolve(JSON.parse(data));
         } else {
           console.error(`[Mailer] Brevo API error ${res.statusCode}:`, data);
@@ -44,7 +72,7 @@ async function brevoSendMail({ to, subject, html }) {
     });
 
     req.on("error", (err) => {
-      console.error("[Mailer] Request failed:", err.message);
+      console.error("[Mailer] Brevo request failed:", err.message);
       resolve(null);
     });
 
@@ -53,16 +81,81 @@ async function brevoSendMail({ to, subject, html }) {
   });
 }
 
-async function verifyMailer() {
-  if (process.env.BREVO_API_KEY) {
-    console.log("[Mailer] Brevo HTTP API ready.");
-  } else {
-    console.warn("[Mailer] WARNING: BREVO_API_KEY not set.");
+// 2. Resend SDK Mail Sender
+async function resendSendMail({ to, subject, html, replyTo }) {
+  if (!resendClient) return null;
+  try {
+    const senderEmail = process.env.SMTP_FROM_EMAIL || "onboarding@resend.dev";
+    const senderName = "Nazara Store";
+
+    const response = await resendClient.emails.send({
+      from: `${senderName} <${senderEmail}>`,
+      to,
+      subject,
+      html,
+      reply_to: replyTo,
+    });
+    console.log(`[Mailer] Email sent to ${to} via Resend`);
+    return response;
+  } catch (err) {
+    console.error("[Mailer] Resend error:", err.message);
+    return null;
   }
 }
 
-async function sendMail({ to, subject, html }) {
-  return brevoSendMail({ to, subject, html });
+// 3. Gmail SMTP Mail Sender
+async function gmailSendMail({ to, subject, html, replyTo }) {
+  if (!gmailTransporter) return null;
+  try {
+    const senderEmail = process.env.GMAIL_USER;
+    const senderName = "Nazara Store";
+
+    const mailOptions = {
+      from: `"${senderName}" <${senderEmail}>`,
+      to,
+      subject,
+      html,
+    };
+
+    if (replyTo) {
+      mailOptions.replyTo = replyTo;
+    }
+
+    const info = await gmailTransporter.sendMail(mailOptions);
+    console.log(`[Mailer] Email sent to ${to} via Gmail SMTP`);
+    return info;
+  } catch (err) {
+    console.error("[Mailer] Gmail SMTP error:", err.message);
+    return null;
+  }
+}
+
+// Verify configured provider
+async function verifyMailer() {
+  if (process.env.BREVO_API_KEY) {
+    console.log("✅ [Mailer] Brevo HTTP API configuration active.");
+  } else if (process.env.RESEND_API_KEY) {
+    console.log("✅ [Mailer] Resend API configuration active.");
+  } else if (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) {
+    console.log("✅ [Mailer] Nodemailer Gmail SMTP active.");
+  } else {
+    console.warn("⚠️ [Mailer] No valid mailer keys found in environment variables.");
+  }
+}
+
+// Unified Send Mail Router
+async function sendMail({ to, subject, html, replyTo }) {
+  // Priority: 1. Resend, 2. Gmail SMTP, 3. Brevo HTTP
+  if (process.env.RESEND_API_KEY) {
+    return resendSendMail({ to, subject, html, replyTo });
+  } else if (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) {
+    return gmailSendMail({ to, subject, html, replyTo });
+  } else if (process.env.BREVO_API_KEY) {
+    return brevoSendMail({ to, subject, html, replyTo });
+  } else {
+    console.error("[Mailer] Failed to send email: No configuration found in environment variables.");
+    return null;
+  }
 }
 
 async function sendOTPEmail(email, name, otp) {

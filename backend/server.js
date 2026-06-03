@@ -24,6 +24,11 @@ const passport = require("./config/passport");
 
 const app = express();
 app.set('trust proxy', 1);
+
+// Initialize database schema and seed data
+const { initializeDatabase } = require("./scripts/dbInit");
+initializeDatabase();
+
 const { verifyMailer } = require("./config/mailer");
 verifyMailer();
 

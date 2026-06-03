@@ -209,7 +209,7 @@ export default function ProductDetailPage() {
 
             <div className="grid grid-cols-1 gap-2 pt-6 border-t border-ink-100">
               {[
-                { icon: '🚚', text: 'Free shipping on orders over ?00' },
+                { icon: '🚚', text: 'Free shipping on orders over ₹1,000' },
                 { icon: '↩️', text: '30-day easy returns & exchanges' },
                 { icon: '🔒', text: 'Secure payment with SSL encryption' },
               ].map((perk) => (

@@ -49,13 +49,13 @@ const cartValidator = [
 ];
 
 const orderValidator = [
-  body('shipping_address').notEmpty().withMessage('Shipping address is required'),
-  body('shipping_address.name').notEmpty().withMessage('Name is required'),
-  body('shipping_address.email').isEmail().withMessage('Valid email is required'),
-  body('shipping_address.address').notEmpty().withMessage('Street address is required'),
-  body('shipping_address.city').notEmpty().withMessage('City is required'),
-  body('shipping_address.state').notEmpty().withMessage('State is required'),
-  body('shipping_address.zip').notEmpty().withMessage('ZIP code is required'),
+  body('shippingAddress').notEmpty().withMessage('Shipping address is required'),
+  body('shippingAddress.name').notEmpty().withMessage('Name is required'),
+  body('shippingAddress.phone').notEmpty().withMessage('Phone number is required'),
+  body('shippingAddress.address').notEmpty().withMessage('Address is required'),
+  body('shippingAddress.city').notEmpty().withMessage('City is required'),
+  body('shippingAddress.state').notEmpty().withMessage('State is required'),
+  body('shippingAddress.zip').notEmpty().withMessage('ZIP code is required'),
   validate,
 ];
 

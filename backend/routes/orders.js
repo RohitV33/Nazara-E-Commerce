@@ -10,6 +10,7 @@ const {
 } = require("../controllers/orderController");
 
 const { authenticate, isAdmin } = require("../middleware/auth");
+const { orderValidator } = require("../middleware/validate");
 const db = require("../config/db");
 
 router.get("/admin/stats", authenticate, isAdmin, async (req, res) => {
@@ -93,7 +94,7 @@ router.get("/admin/top-products", authenticate, isAdmin, async (req, res) => {
   }
 });
 
-router.post("/", authenticate, createOrder);
+router.post("/", authenticate, orderValidator, createOrder);
 router.get("/mine", authenticate, getMyOrders);
 
 router.get("/", authenticate, isAdmin, getAllOrders);

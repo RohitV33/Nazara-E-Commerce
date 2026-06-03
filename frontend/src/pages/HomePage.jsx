@@ -150,7 +150,7 @@ function CategorySection() {
 
 function FeaturesBar() {
   const features = [
-    { icon: Truck, title: 'Free Shipping', desc: 'On orders over ?00' },
+    { icon: Truck, title: 'Free Shipping', desc: 'On orders over ₹1,000' },
     { icon: Shield, title: 'Secure Checkout', desc: '256-bit SSL encryption' },
     { icon: RefreshCw, title: 'Easy Returns', desc: '30-day hassle-free returns' },
     { icon: Star, title: 'Top Rated', desc: '4.9 avg customer rating' },

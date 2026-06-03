@@ -26,7 +26,7 @@ export default function OAuthSuccess() {
       } catch (e) {
         console.error("Token decode failed", e);
       }
-      navigate("/");
+      window.location.href = "/";
 
     } else {
       

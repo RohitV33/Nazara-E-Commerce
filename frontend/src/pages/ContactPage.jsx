@@ -117,7 +117,7 @@ export default function ContactPage() {
                       <textarea className="input-field resize-none h-36"
                         placeholder="Describe your issue or query in detail..."
                         value={form.message} onChange={e => setForm({...form, message: e.target.value})}
-                        required minLength={5} />
+                        required minLength={10} />
                     </div>
                     <button type="submit" disabled={loading} className="btn-primary">
                       {loading

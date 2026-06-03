@@ -46,12 +46,15 @@ router.put("/:id", authenticate, async (req, res) => {
     const { name, phone, flat, area, landmark = "", city, state, zip, country = "India", is_default = false } = req.body;
     if (is_default)
       await db.query(`UPDATE addresses SET is_default = false WHERE user_id = $1`, [req.user.id]);
-    await db.query(
+    const result = await db.query(
       `UPDATE addresses SET name=$1, phone=$2, flat=$3, area=$4, landmark=$5, city=$6, state=$7, zip=$8, country=$9, is_default=$10
        WHERE id = $11 AND user_id = $12`,
       [name, phone, flat, area, landmark, city, state, zip, country, is_default, req.params.id, req.user.id]
     );
-    const updatedResult = await db.query(`SELECT * FROM addresses WHERE id = $1`, [req.params.id]);
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: "Address not found or unauthorized" });
+    }
+    const updatedResult = await db.query(`SELECT * FROM addresses WHERE id = $1 AND user_id = $2`, [req.params.id, req.user.id]);
     res.json(updatedResult.rows[0]);
   } catch (err) {
     res.status(500).json({ message: "Failed to update address" });
@@ -60,7 +63,10 @@ router.put("/:id", authenticate, async (req, res) => {
 
 router.delete("/:id", authenticate, async (req, res) => {
   try {
-    await db.query(`DELETE FROM addresses WHERE id = $1 AND user_id = $2`, [req.params.id, req.user.id]);
+    const result = await db.query(`DELETE FROM addresses WHERE id = $1 AND user_id = $2`, [req.params.id, req.user.id]);
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: "Address not found or unauthorized" });
+    }
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ message: "Failed to delete address" });
@@ -70,7 +76,10 @@ router.delete("/:id", authenticate, async (req, res) => {
 router.patch("/:id/default", authenticate, async (req, res) => {
   try {
     await db.query(`UPDATE addresses SET is_default = false WHERE user_id = $1`, [req.user.id]);
-    await db.query(`UPDATE addresses SET is_default = true WHERE id = $1 AND user_id = $2`, [req.params.id, req.user.id]);
+    const result = await db.query(`UPDATE addresses SET is_default = true WHERE id = $1 AND user_id = $2`, [req.params.id, req.user.id]);
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: "Address not found or unauthorized" });
+    }
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ message: "Failed to set default" });

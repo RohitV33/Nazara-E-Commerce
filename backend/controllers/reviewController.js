@@ -83,13 +83,13 @@ exports.addReview = async (req, res) => {
 
 exports.updateReview = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { reviewId } = req.params;
     const { rating, comment } = req.body;
     const user_id = req.user.id;
 
     const reviewResult = await db.query(
       'SELECT * FROM reviews WHERE id = $1 AND user_id = $2',
-      [id, user_id]
+      [reviewId, user_id]
     );
     if (reviewResult.rows.length === 0) {
       return res.status(404).json({ message: 'Review not found' });
@@ -99,7 +99,7 @@ exports.updateReview = async (req, res) => {
 
     await db.query(
       'UPDATE reviews SET rating = $1, comment = $2 WHERE id = $3',
-      [rating, comment || null, id]
+      [rating, comment || null, reviewId]
     );
 
     await db.query(
@@ -118,12 +118,12 @@ exports.updateReview = async (req, res) => {
 
 exports.deleteReview = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { reviewId } = req.params;
     const user_id = req.user.id;
 
     const reviewResult = await db.query(
       'SELECT * FROM reviews WHERE id = $1 AND (user_id = $2 OR $3 = $4)',
-      [id, user_id, req.user.role, 'admin']
+      [reviewId, user_id, req.user.role, 'admin']
     );
     if (reviewResult.rows.length === 0) {
       return res.status(404).json({ message: 'Review not found' });
@@ -131,7 +131,7 @@ exports.deleteReview = async (req, res) => {
 
     const review = reviewResult.rows[0];
 
-    await db.query('DELETE FROM reviews WHERE id = $1', [id]);
+    await db.query('DELETE FROM reviews WHERE id = $1', [reviewId]);
 
     await db.query(
       `UPDATE products SET
