@@ -1,26 +1,3 @@
--- Create custom enum types for PostgreSQL if they do not exist
-DO $$ 
-BEGIN
-  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'role_enum') THEN
-    CREATE TYPE role_enum AS ENUM ('user', 'admin');
-  END IF;
-END $$;
-
-DO $$ 
-BEGIN
-  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'order_status_enum') THEN
-    CREATE TYPE order_status_enum AS ENUM ('pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled', 'dispatched', 'out_for_delivery');
-  END IF;
-END $$;
-
-DO $$ 
-BEGIN
-  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'payment_status_enum') THEN
-    CREATE TYPE payment_status_enum AS ENUM ('pending', 'paid', 'failed', 'refunded');
-  END IF;
-END $$;
-
-
 CREATE TABLE IF NOT EXISTS users (
   id SERIAL PRIMARY KEY,
   name VARCHAR(100) NOT NULL,

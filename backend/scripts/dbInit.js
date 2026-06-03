@@ -6,19 +6,33 @@ const db = require('../config/db');
 async function initializeDatabase() {
   console.log('⏳ Initializing database schema...');
   try {
-    // 1. Read and execute schema.sql
+    // 1. Verify/create custom enum types in PostgreSQL programmatically to avoid SQL parser splitting bugs
+    const checkRoleEnum = await db.query("SELECT 1 FROM pg_type WHERE typname = 'role_enum'");
+    if (checkRoleEnum.rows.length === 0) {
+      await db.query("CREATE TYPE role_enum AS ENUM ('user', 'admin')");
+    }
+
+    const checkStatusEnum = await db.query("SELECT 1 FROM pg_type WHERE typname = 'order_status_enum'");
+    if (checkStatusEnum.rows.length === 0) {
+      await db.query("CREATE TYPE order_status_enum AS ENUM ('pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled', 'dispatched', 'out_for_delivery')");
+    }
+
+    const checkPaymentEnum = await db.query("SELECT 1 FROM pg_type WHERE typname = 'payment_status_enum'");
+    if (checkPaymentEnum.rows.length === 0) {
+      await db.query("CREATE TYPE payment_status_enum AS ENUM ('pending', 'paid', 'failed', 'refunded')");
+    }
+
+    // 2. Read and execute schema.sql
     const schemaPath = path.join(__dirname, '../config/schema.sql');
     const schemaSql = fs.readFileSync(schemaPath, 'utf8');
     
     // Split queries by semicolon to execute them sequentially (filtering out empty lines)
-    // Note: We use a custom parser helper to handle DO blocks and SQL statements properly
     const queries = schemaSql
       .split(/;\s*$/m)
       .map(q => q.trim())
       .filter(q => q.length > 0);
 
     for (let sql of queries) {
-      // Re-add semicolon if it was stripped
       if (!sql.endsWith(';')) sql += ';';
       try {
         await db.query(sql);
