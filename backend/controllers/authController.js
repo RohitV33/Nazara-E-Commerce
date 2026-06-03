@@ -204,6 +204,9 @@ exports.login = async (req, res) => {
     if (userResult.rows.length === 0) return res.status(401).json({ message: 'Invalid credentials' });
 
     const user = userResult.rows[0]; // ✅ FIX: .rows[0]
+    if (!user.password) {
+      return res.status(401).json({ message: 'This account was registered using Google. Please log in with Google.' });
+    }
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ message: 'Invalid credentials' });
 
@@ -271,7 +274,11 @@ exports.changePassword = async (req, res) => {
 
    
     const userResult = await db.query('SELECT * FROM users WHERE id = $1', [req.user.id]);
-    const isMatch = await bcrypt.compare(currentPassword, userResult.rows[0].password);
+    const user = userResult.rows[0];
+    if (!user.password) {
+      return res.status(400).json({ message: 'Google OAuth accounts do not have a local password. Please use forgot password to set one.' });
+    }
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
     if (!isMatch) return res.status(400).json({ message: 'Current password is incorrect' });
 
     const hashed = await bcrypt.hash(newPassword, 10);
