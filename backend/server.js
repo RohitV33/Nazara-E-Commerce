@@ -71,20 +71,27 @@ app.use("/api/auth/login", authLimiter);
 app.use("/api/auth/register", authLimiter);
 
 
-app.get("/api/auth/google", passport.authenticate("google", { scope: ["profile", "email"] }));
-
-app.get("/api/auth/google/callback",
-  passport.authenticate("google", { session: false }),
-  (req, res) => {
-    const user = req.user;
-    const token = jwt.sign(
-      { id: user.id, email: user.email, name: user.name, role: user.role || "user" },
-      process.env.JWT_SECRET,
-      { expiresIn: "7d" }
-    );
-    res.redirect(`${process.env.CLIENT_URL}/oauth-success?token=${token}`);
+app.get("/api/auth/google", (req, res, next) => {
+  if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+    return res.status(501).json({ message: "Google Authentication is not configured on this server." });
   }
-);
+  passport.authenticate("google", { scope: ["profile", "email"] })(req, res, next);
+});
+
+app.get("/api/auth/google/callback", (req, res, next) => {
+  if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+    return res.status(501).json({ message: "Google Authentication is not configured on this server." });
+  }
+  passport.authenticate("google", { session: false })(req, res, next);
+}, (req, res) => {
+  const user = req.user;
+  const token = jwt.sign(
+    { id: user.id, email: user.email, name: user.name, role: user.role || "user" },
+    process.env.JWT_SECRET,
+    { expiresIn: "7d" }
+  );
+  res.redirect(`${process.env.CLIENT_URL}/oauth-success?token=${token}`);
+});
 
 
 app.use("/api/auth", require("./routes/auth"));
